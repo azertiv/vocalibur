@@ -21,6 +21,7 @@
   --content:1040px;--reading:720px;
 }
 @media (prefers-color-scheme:dark){
+  .device{background:#0b0907;box-shadow:inset 0 0 0 1.5px #4a4339,var(--shadow-strong)}
   :root{
     --paper:#14110c;--paper-deep:#1b1710;--card:#221d15;
     --ink:#f0e8d7;--ink-hover:#ffffff;--ink-soft:#c8bda6;--ink-faint:#a39883;
@@ -96,17 +97,29 @@ button,a{touch-action:manipulation}
 /* App screens */
 .app-screen{width:270px;height:auto;aspect-ratio:630/1368;border-radius:30px;background:var(--paper);box-shadow:var(--shadow);outline:1px solid color-mix(in srgb,var(--ink) 8%,transparent);outline-offset:-1px}
 
-/* Hero */
-.hero{max-width:var(--content);margin:0 auto;padding:46px 24px 54px;display:grid;grid-template-columns:1.25fr 1fr;align-items:center;gap:48px}
+/* Hero: the home page in an iPhone, two of its widgets lifted out of it */
+.hero{max-width:var(--content);margin:0 auto;padding:46px 24px 54px;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px}
 .hero h1{margin-top:18px;font-size:46px;line-height:1.07;letter-spacing:-.035em}
 .hero h1 em{display:block;margin-top:6px;color:var(--amber-deep)}
 .hero__lead{max-width:40ch;margin-top:22px;font-size:18px;line-height:1.62}
 .hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin-top:28px}
 .hero__note{margin-top:18px;font-size:14px}
 .hero__product{min-width:0;text-align:center}
-.hero__arch{position:relative;display:flex;align-items:center;justify-content:center;min-height:600px;padding:30px 30px 26px;border-radius:140px 140px 16px 16px;background:var(--arch)}
-.hero__arch .app-screen{width:272px;transform:rotate(1.6deg)}
+.hero__stage{position:relative;display:grid;place-items:center;padding:30px 0 24px}
+.hero__arch{position:absolute;inset:0 9%;border-radius:150px 150px 18px 18px;background:var(--arch)}
+/* Each lifted widget starts exactly over its own tile in the screen (the app's grid, D-214) and
+   rises from it, so the screen never shows the same widget twice. */
+.hero__lift{position:absolute;z-index:2;display:block;filter:drop-shadow(0 18px 24px #493b2129) drop-shadow(0 2px 3px #493b211f);animation:lift .9s cubic-bezier(.2,.75,.25,1) .35s both}
+.hero__lift img{width:100%}
+.hero__lift--level{width:54.5%;left:1.1%;top:45.1%;--from:scale(.74);--to:rotate(-3deg) translate(-6%,-2%)}
+.hero__lift--library{width:99.4%;left:.3%;top:66.5%;--from:scale(.84);--to:rotate(1.5deg) translate(4%,2%);animation-delay:.55s}
+@keyframes lift{from{opacity:0;transform:var(--from)}to{opacity:1;transform:var(--to)}}
+.hero__lift{transform:var(--to)}
 .hero__product figcaption{margin-top:12px;font-size:13px;color:var(--ink-faint)}
+
+/* A drawn iPhone around a whole screen */
+.device{position:relative;z-index:1;width:282px;padding:8px;border-radius:50px;background:#1e1a15;box-shadow:inset 0 0 0 1.5px #5d554a,var(--shadow-strong)}
+.device .app-screen{width:100%;border-radius:42px;box-shadow:none;outline:0}
 
 /* Sections */
 .section{max-width:var(--content);margin:0 auto;padding:64px 24px}
@@ -115,64 +128,154 @@ button,a{touch-action:manipulation}
 .section-intro h2{font-size:36px}
 .section-intro p{margin-top:12px;font-size:18px;line-height:1.6}
 
-/* How it works */
-.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;counter-reset:step}
-.step{display:flex;flex-direction:column;min-width:0}
-.step__visual{position:relative;display:flex;align-items:center;justify-content:center;height:330px;overflow:hidden;border-radius:16px;background:var(--band)}
-.step:nth-child(2) .step__visual{background:var(--band-amber)}
-.step:nth-child(3) .step__visual{background:var(--band-blue)}
-.step__visual .app-screen{position:absolute;top:28px;left:50%;width:250px;border-radius:26px;transform:translateX(-50%)}
-.step__visual--peek::after{content:"";position:absolute;inset:auto 0 0;height:90px;background:linear-gradient(to bottom,transparent,var(--band))}
-.step__text{margin-top:20px}
+/* How it works: a path up the mountain, a flag at each stage */
+.trail{position:relative;margin:0;padding:0;list-style:none}
+.trail::before{content:"";position:absolute;left:23px;top:58px;bottom:96px;border-left:2px dashed var(--line-strong)}
+.trail__stage{position:relative;display:grid;grid-template-columns:48px minmax(0,.85fr) minmax(0,1.15fr);gap:0 34px;align-items:start;padding:34px 0}
+.trail__flag{position:relative;width:48px;height:58px;margin-top:-6px;background:var(--paper)}
+.trail__flag svg{width:48px;height:58px;overflow:visible}
+.trail__flag .pole{fill:none;stroke:var(--ink-soft);stroke-width:2.2;stroke-linecap:round}
+.trail__flag .cloth{fill:var(--amber)}
+.trail__flag span{position:absolute;left:11px;top:6px;width:27px;font:750 14px/20px var(--sans);text-align:center;color:#fffdf8}
+.trail__text h3{margin-top:6px;font-size:26px}
+.trail__text p{margin-top:8px;font-size:16px}
 .step__kicker{font-size:14px;font-weight:650;color:var(--amber-deep)}
-.step__kicker::before{counter-increment:step;content:"0" counter(step) "  ";white-space:pre}
-.step h3{margin-top:6px;font-size:24px}
-.step p{margin-top:8px;font-size:16px}
-.method__link{margin-top:26px}
-
-/* Gesture compass */
-.compass{display:grid;grid-template-columns:1fr auto 1fr;grid-template-areas:". up ." "left card right" ". down .";align-items:center;justify-items:center;gap:10px 6px;width:100%;padding:0 8px}
-.compass__card{grid-area:card;display:flex;flex-direction:column;justify-content:center;gap:8px;width:88px;height:112px;padding:14px 12px;border-radius:13px;background:var(--card);box-shadow:var(--shadow)}
-.compass__card i{display:block;height:7px;border-radius:4px;background:var(--line)}
-.compass__card i:first-child{width:70%;height:10px;background:var(--ink);opacity:.82}
-.compass__card i:nth-child(2){background:var(--amber-bright)}
-.compass__card i:nth-child(3){width:80%}
-.compass__card span{margin-top:6px;font-size:11px;font-weight:650;color:var(--ink-faint);text-align:center}
-.compass__dir{display:flex;flex-direction:column;align-items:center;gap:1px;max-width:124px;text-align:center;line-height:1.25}
-.compass__dir b{font-size:13.5px;font-weight:700;white-space:nowrap}
-.compass__dir span{font-size:12.5px;color:var(--ink-soft)}
-.compass__dir svg{width:22px;height:22px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.compass__dir--up{grid-area:up;color:var(--master)}
-.compass__dir--down{grid-area:down;color:var(--archive)}
-.compass__dir--left{grid-area:left;color:var(--review)}
-.compass__dir--right{grid-area:right;color:var(--know)}
-.compass__dir b{color:inherit}
 .step__note{margin-top:10px;font-size:14px;color:var(--ink-faint)}
+.method__link{margin-top:10px;padding-left:82px}
+.trail__visual{min-width:0}
+.trail__visual--list{justify-self:center;width:min(320px,100%)}
+.trail__visual--list img{width:100%;border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow)}
 
-/* Interval timeline */
-.timeline{width:100%;max-width:300px;padding:0 18px}
-.timeline svg{width:100%;height:auto;overflow:visible}
-.timeline text{font:600 12px var(--sans);fill:var(--ink-soft)}
-.timeline .axis{stroke:var(--line-strong);stroke-width:1.5}
-.timeline .ok{fill:var(--know)}
-.timeline .miss{fill:var(--review)}
-.timeline .link{stroke:var(--ink-faint);stroke-width:1.5;stroke-dasharray:2 4;fill:none}
+/* The card to swipe */
+.deck{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,310px) minmax(0,1fr);grid-template-areas:". up ." "left stack right" ". down ." ". reveal ." "help help help";align-items:center;justify-items:center;gap:12px 10px}
+.deck__dir{display:flex;flex-direction:column;align-items:center;gap:1px;max-width:118px;text-align:center;line-height:1.25;opacity:.78;transition:transform .2s,opacity .2s}
+.deck__dir b{font-size:13.5px;font-weight:700;white-space:nowrap}
+.deck__dir span{font-size:12.5px;color:var(--ink-soft)}
+.deck__dir svg{width:22px;height:22px;margin-bottom:3px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.deck__dir--up{grid-area:up;color:var(--master)}
+.deck__dir--down{grid-area:down;color:var(--archive)}
+.deck__dir--left{grid-area:left;color:var(--review)}
+.deck__dir--right{grid-area:right;color:var(--know)}
+.deck__dir.is-lit{opacity:1;transform:scale(1.12)}
+.deck__stack{grid-area:stack;position:relative;width:100%;height:346px}
+.deck__reveal{grid-area:reveal;min-height:44px;padding:8px 22px}
+.deck__reveal.is-spent{visibility:hidden}
+.deck__help{grid-area:help;max-width:46ch;font-size:13.5px;text-align:center;color:var(--ink-faint)}
+.demo-card{position:absolute;inset:0;display:flex;flex-direction:column;padding:16px 20px 18px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:0 1px 2px #493b211a,0 14px 30px #493b211c;transform:translateY(calc(var(--depth) * 8px)) scale(calc(1 - var(--depth) * .045));z-index:calc(10 - var(--depth));transition:transform .35s cubic-bezier(.2,.7,.3,1),opacity .35s;user-select:none;-webkit-user-select:none}
+.demo-card:not(:first-child){pointer-events:none}
+.deck.is-live .demo-card{pointer-events:none}
+.deck.is-live .demo-card.is-top{pointer-events:auto;cursor:grab;touch-action:none}
+.demo-card.is-top:active{cursor:grabbing}
+.demo-card__top{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:650;color:var(--amber-deep)}
+.demo-card__bar{display:flex;gap:3px}
+.demo-card__bar i{width:13px;height:4px;border-radius:2px;background:var(--line)}
+.demo-card__bar i:first-child{background:var(--amber)}
+.demo-card__level{margin-left:auto;padding:1px 10px;border:1px solid var(--line);border-radius:999px;color:var(--ink-soft)}
+.demo-card__clue{display:flex;align-items:baseline;gap:10px;margin-top:16px}
+.demo-card__clue b{font:italic 600 30px/1.1 var(--serif);color:var(--ink)}
+.demo-card__clue span{padding:1px 9px;border-radius:999px;background:var(--paper-deep);font-size:13px;color:var(--ink-soft)}
+.demo-card__sentence{margin-top:12px;font:400 20px/1.32 var(--serif);color:var(--ink)}
+.demo-card__sentence::before{content:"";display:block;width:32px;height:1.5px;margin-bottom:12px;background:var(--line-strong)}
+.demo-card__blank{display:inline-block;min-width:4.8em;border-bottom:2px solid var(--amber);line-height:1.05;text-align:center}
+.demo-card__blank span{opacity:0}
+.demo-card.is-revealed .demo-card__blank{min-width:0;border-color:transparent}
+.demo-card.is-revealed .demo-card__blank span{opacity:1;padding:0 3px;border-radius:4px;background:var(--amber-wash);font-weight:600}
+.demo-card__translation{margin-top:8px;font-size:14px;line-height:1.45;color:var(--ink-soft)}
+.demo-card__answer{display:none;margin-top:auto;padding:8px 12px;border-radius:12px;background:var(--band-amber)}
+.demo-card__answer b{display:block;font:600 19px/1.2 var(--serif);color:var(--ink)}
+.demo-card__answer span{font-size:13px;letter-spacing:.04em;color:var(--ink-soft)}
+.demo-card.is-revealed .demo-card__answer{display:block}
 
-/* Features */
+/* The schedule, read with the finger */
+.chart{margin:0}
+.chart__readout{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;font-size:14px;color:var(--ink-soft)}
+.chart__readout b{min-width:5.2em;font:600 21px/1.2 var(--serif);color:var(--ink)}
+.chart__key{white-space:nowrap}
+.chart__key i{display:inline-block;width:18px;height:0;margin-right:7px;vertical-align:middle;border-top:3px solid var(--amber);border-radius:2px}
+.chart__key--alone i{border-top:2px dashed var(--ink-faint)}
+.chart__key strong{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.chart svg{width:100%;height:auto;margin-top:6px;overflow:visible;touch-action:pan-y;cursor:crosshair}
+.chart svg:focus-visible{outline-offset:6px}
+.chart__spaced{fill:none;stroke:var(--amber);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.chart__alone{fill:none;stroke:var(--ink-faint);stroke-width:2;stroke-dasharray:5 6}
+.chart__target{stroke:var(--line-strong);stroke-width:1;stroke-dasharray:2 4}
+.chart__axis{stroke:var(--line-strong);stroke-width:1.5}
+.chart__tick{font:600 13.5px var(--sans);fill:var(--ink-faint)}
+.chart__flag line{stroke:var(--ink-soft);stroke-width:1.6}
+.chart__flag path{fill:var(--amber-deep)}
+.chart__learned{fill:var(--paper);stroke:var(--amber);stroke-width:2.5}
+.chart__cursor{stroke:var(--ink);stroke-width:1.2;opacity:.45}
+.chart__dot{stroke:var(--paper);stroke-width:3}
+.chart__dot--spaced{fill:var(--amber)}
+.chart__dot--alone{fill:var(--ink-faint)}
+.chart__note{margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--ink-faint)}
+
+/* Features: each one a composition of real details */
 .features{max-width:var(--content);margin:0 auto;padding:0 24px}
-.feature{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:60px;padding:60px 0;border-top:1px solid var(--line)}
+.feature{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);align-items:center;gap:60px;padding:64px 0;border-top:1px solid var(--line)}
 .feature:nth-child(even) .feature__media{order:-1}
 .feature__copy h2{margin-top:10px;font-size:34px}
 .feature__copy>p{margin-top:16px;font-size:17px;line-height:1.62}
 .feature__copy .feature__detail{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
-.feature__media{display:flex;align-items:flex-start;justify-content:center;gap:22px;padding:38px 26px;border-radius:18px;background:var(--band)}
-.feature--voice .feature__media{background:var(--band-sage)}
-.feature--progress .feature__media{background:var(--band-blue)}
-.feature--reading .feature__media,.feature--themes .feature__media{background:var(--band-amber)}
-.feature__media figure{position:relative;min-width:0}
-.feature__media .app-screen{width:270px}
-.feature__media--pair .app-screen{width:226px}
-.feature__media figure .premium-badge{position:absolute;top:-11px;right:14px;background:var(--card)}
+.feature__media{min-width:0}
+.stage{position:relative;width:100%;max-width:480px;margin:0 auto}
+.stage img{width:100%}
+.stage--cards{height:520px}
+.stage--cards .stage__back,.stage--cards .stage__front{position:absolute;width:70%}
+.stage--cards .stage__back{left:0;top:0;transform:rotate(-5deg);opacity:.92}
+.stage--cards .stage__front{right:0;bottom:0;transform:rotate(2.5deg)}
+.stage--voice{display:grid;place-items:center;padding:40px 0 44px;overflow:hidden;border-radius:24px}
+.stage--voice .device{width:250px}
+.rings{position:absolute;left:50%;top:50%;width:0;height:0}
+.rings i{position:absolute;left:-230px;top:-230px;width:460px;height:460px;border:2px solid var(--amber);border-radius:50%;opacity:0;animation:ring 3.6s cubic-bezier(.2,.6,.3,1) infinite}
+.rings i:nth-child(2){animation-delay:1.2s}
+.rings i:nth-child(3){animation-delay:2.4s}
+@keyframes ring{from{opacity:.5;transform:scale(.5)}to{opacity:0;transform:scale(1.15)}}
+.stage--reading{height:540px}
+.stage--reading .stage__text{position:absolute;z-index:1;left:0;top:0;width:78%}
+.stage--reading .stage__deck{position:absolute;right:0;bottom:0;width:58%}
+.stage--reading img,.stage--progress .stage__peak img,.stage--themes img{border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.stage__arrow{position:absolute;left:16%;top:44%;width:96px;height:96px;fill:none;stroke:var(--amber-deep);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.stage--progress{padding-bottom:150px}
+.stage--progress .stage__traj{position:absolute;right:-5%;bottom:0;width:58%}
+.stage--progress .stage__traj .premium-badge{position:absolute;top:-11px;left:18px;z-index:1;background:var(--card)}
+.stage--themes{max-width:420px;perspective:1100px}
+.stage--themes img{transform:rotateX(14deg) rotateZ(-6deg);transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.stage--themes:hover img{transform:none}
+.stage .crop--card-front,.stage .crop--card-back,.stage .crop--trajectory{filter:drop-shadow(0 16px 24px #493b2124) drop-shadow(0 1px 2px #493b211f)}
+
+/* Home page widgets: the app's own tiles, as a table to compose */
+.widgets{padding:76px 24px;background:var(--band)}
+.widgets__inner{max-width:var(--content);margin:auto}
+.widgets__intro{max-width:640px}
+.widgets__intro h2{margin-top:10px;font-size:36px}
+.widgets__intro>p{margin-top:14px;font-size:17px;line-height:1.62}
+.widgets__intro .feature__detail{margin-top:14px;font-size:15px}
+.bento{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"level milestones streak streak" "library library days voice";gap:18px;margin-top:40px}
+.bento__tile{position:relative;margin:0;filter:drop-shadow(0 14px 22px #493b2121) drop-shadow(0 1px 2px #493b211a)}
+.bento__tile img{width:100%}
+.bento__tile .premium-badge{position:absolute;top:-11px;right:18px;z-index:1;background:var(--card)}
+.bento__tile--level{grid-area:level}
+.bento__tile--milestones{grid-area:milestones}
+.bento__tile--streak{grid-area:streak}
+.bento__tile--library{grid-area:library}
+.bento__tile--days{grid-area:days}
+.bento__tile--voice{grid-area:voice}
+
+/* Objects move in once, as they come into view (home.js) */
+.js-arrive [data-arrive]{opacity:0;transform:translateY(26px)}
+.js-arrive [data-arrive].is-here{opacity:1;transform:none;transition:opacity .6s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+.js-arrive .bento__tile:nth-child(2){transition-delay:.06s}
+.js-arrive .bento__tile:nth-child(3){transition-delay:.12s}
+.js-arrive .bento__tile:nth-child(4){transition-delay:.18s}
+.js-arrive .bento__tile:nth-child(5){transition-delay:.24s}
+.js-arrive .bento__tile:nth-child(6){transition-delay:.3s}
+.js-arrive .stage--cards .stage__back{transform:rotate(0) translate(18%,8%);transition:transform .9s cubic-bezier(.2,.7,.2,1) .15s}
+.js-arrive .stage--cards.is-here .stage__back{transform:rotate(-5deg)}
+.js-arrive .stage--progress .stage__traj{transform:translateY(40px);opacity:0;transition:transform .9s cubic-bezier(.2,.7,.2,1) .25s,opacity .6s .25s}
+.js-arrive .stage--progress.is-here .stage__traj{transform:none;opacity:1}
+.js-arrive .stage--reading .stage__deck{transform:translate(-30px,-40px) scale(.92);opacity:0;transition:transform .9s cubic-bezier(.2,.7,.2,1) .3s,opacity .6s .3s}
+.js-arrive .stage--reading.is-here .stage__deck{transform:none;opacity:1}
 
 /* Privacy band */
 .privacy-band{max-width:var(--content);margin:0 auto;padding:0 24px}
@@ -398,7 +501,7 @@ button,a{touch-action:manipulation}
   .site-nav__links a{font-size:14.5px}
   .hero{gap:36px}
   .feature{gap:40px}
-  .feature__media--pair .app-screen{width:200px}
+  .bento{gap:14px}
 }
 @media (max-width:900px){
   .site-header__inner{min-height:62px}
@@ -413,16 +516,16 @@ button,a{touch-action:manipulation}
   html:not(.js) .nav-toggle{display:none}
   html:not(.js) .site-header__inner{flex-wrap:wrap;padding:10px 0}
   html:not(.js) .site-nav{flex-basis:100%;flex-wrap:wrap;margin-left:0;gap:6px 18px}
-  .hero{grid-template-columns:1.05fr .95fr;padding-top:36px}
+  .hero{grid-template-columns:1fr .9fr;padding-top:36px}
   .hero h1{font-size:40px}
-  .hero__arch{min-height:520px;border-radius:110px 110px 14px 14px}
-  .hero__arch .app-screen{width:236px}
-  .steps{grid-template-columns:1fr;gap:34px}
-  .step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:28px;align-items:center}
-  .step__visual{height:300px}
-  .step__text{margin-top:0}
-  .feature{grid-template-columns:1fr;gap:28px;padding:48px 0}
+  .device{width:246px;border-radius:44px}
+  .device .app-screen{border-radius:37px}
+  .trail__stage{grid-template-columns:40px minmax(0,1fr);row-gap:24px}
+  .trail__visual{grid-column:2}
+  .trail__visual--list{justify-self:start}
+  .feature{grid-template-columns:1fr;gap:34px;padding:52px 0}
   .feature:nth-child(even) .feature__media{order:0}
+  .bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"level milestones" "streak streak" "library library" "days voice";gap:12px;max-width:560px}
   .faq-section{grid-template-columns:1fr;gap:16px}
   .quiz-invitation__inner{flex-direction:column;align-items:flex-start;gap:20px}
 }
@@ -431,29 +534,53 @@ button,a{touch-action:manipulation}
   .site-header{padding:0 16px}
   .js .site-nav{padding:10px 16px 20px}
   .brand b{font-size:25px}
-  .hero{grid-template-columns:1fr;gap:30px;padding:30px 16px 40px}
-  .hero h1{font-size:35px;max-width:16ch}
-  .hero__lead{font-size:17px}
+  .hero{grid-template-columns:1fr;gap:16px;padding:20px 16px 36px}
+  .hero h1{margin-top:12px;font-size:32px;max-width:16ch}
+  .hero__lead{margin-top:14px;font-size:16px;line-height:1.55}
+  .hero__actions{margin-top:18px}
+  .hero__note{margin-top:8px;font-size:13px}
   .hero__actions{flex-direction:column;align-items:stretch;gap:6px}
   .hero__actions .text-button{justify-content:center}
-  .hero__arch{min-height:0;padding:24px 40px 22px;border-radius:96px 96px 12px 12px}
-  .hero__arch .app-screen{width:min(240px,100%)}
+  .hero__stage{padding:10px 0 12px}
+  .hero__arch{inset:0 4%;border-radius:110px 110px 14px 14px}
+  .device{width:min(232px,62vw);padding:7px;border-radius:40px}
+  .device .app-screen{border-radius:34px}
   .section{padding:46px 16px}
   .section-intro{margin-bottom:26px}
   .section-intro h2{font-size:29px}
   .section-intro p{font-size:16.5px}
-  .step{display:flex;align-items:stretch}
-  .step__visual{width:100%;height:290px}
-  .step__text{margin-top:18px}
-  .step h3{font-size:23px}
+  .trail::before{display:none}
+  .trail__stage{grid-template-columns:36px minmax(0,1fr);gap:18px 14px;padding:24px 0}
+  .trail__flag{width:36px;height:44px;margin-top:-4px}
+  .trail__flag svg{width:36px;height:44px}
+  .trail__flag span{left:8px;top:4px;width:20px;font-size:11.5px;line-height:15px}
+  .trail__visual{grid-column:1 / -1}
+  .trail__visual--list{justify-self:center;width:min(300px,100%)}
+  .trail__text h3{font-size:23px}
+  .method__link{padding-left:0}
+  .deck{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"stack stack" "left right" "up down" "reveal reveal" "help help";gap:12px 8px}
+  .deck__stack{max-width:330px}
+  .deck__dir{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:0 6px;max-width:none}
+  .deck__dir svg{width:18px;height:18px;margin:0}
+  .deck__dir span{flex-basis:100%}
+  .widgets{padding:50px 16px}
+  .widgets__intro h2{font-size:29px}
+  .widgets__intro>p{font-size:16.5px}
+  .bento{margin-top:28px}
   .features{padding:0 16px}
   .feature{padding:40px 0}
   .feature__copy h2{font-size:28px}
   .feature__copy>p{font-size:16.5px}
-  .feature__media{gap:12px;padding:26px 12px;border-radius:16px}
-  .feature__media .app-screen{width:min(250px,100%)}
-  .feature__media--pair figure{flex:1 1 0}
-  .feature__media--pair .app-screen{width:100%;border-radius:20px}
+  .stage--cards{height:min(430px,112vw)}
+  .stage--cards .stage__back,.stage--cards .stage__front{width:74%}
+  .stage--voice .device{width:min(220px,58vw)}
+  .rings i{left:-180px;top:-180px;width:360px;height:360px}
+  .chart__tick{font-size:21px}
+  .stage--reading{height:min(470px,122vw)}
+  .stage--reading .stage__deck{width:64%}
+  .stage--progress{padding-bottom:min(140px,34vw)}
+  .stage--progress .stage__traj{right:0;width:62%}
+  .stage--themes img{transform:none}
   .privacy-band{padding:0 16px}
   .privacy-band__inner{gap:14px;padding:28px 0}
   .privacy-band h2{font-size:23px}
@@ -519,7 +646,14 @@ button,a{touch-action:manipulation}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
-  .hero__arch .app-screen{transform:none}
+  .hero__lift{animation:none}
+  .rings i{opacity:.28!important}
+  .rings i:nth-child(1){transform:scale(.62)!important}
+  .rings i:nth-child(2){transform:scale(.9)!important;opacity:.18!important}
+  .rings i:nth-child(3){transform:scale(1.18)!important;opacity:.1!important}
+  .js-arrive [data-arrive],.js-arrive [data-arrive] *{opacity:1!important;transform:none!important}
+  .js-arrive .stage--cards .stage__back{transform:rotate(-5deg)!important}
+  .stage--themes img{transform:none}
 }
 @media (forced-colors:active){
   .button,.store-chip,.test-option,.locale-menu summary,.nav-toggle{border:1px solid ButtonText}
