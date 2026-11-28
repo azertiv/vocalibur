@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FSRS: come si calcola il prossimo ripasso | Vocalibur</title>
+<script>document.documentElement.classList.add("js");document.addEventListener("click",function(e){var t=e.target.closest(".nav-toggle");if(!t)return;var n=document.getElementById("siteNav");var o=n.classList.toggle("open");t.setAttribute("aria-expanded",String(o))});</script>
+<meta name="description" content="Stabilità, difficoltà, probabilità di richiamo: capire FSRS e i suoi limiti, senza confondere precisione delle previsioni e tempo risparmiato dimostrato.">
+<link rel="canonical" href="https://vocalibur.app/it/blog/fsrs-algoritmo-ripetizione-spaziata/">
+<link rel="alternate" hreflang="fr" href="https://vocalibur.app/fr/blog/fsrs-algorithme-repetition-espacee/">
+<link rel="alternate" hreflang="en" href="https://vocalibur.app/en/blog/fsrs-spaced-repetition-algorithm/">
+<link rel="alternate" hreflang="es" href="https://vocalibur.app/es/blog/fsrs-algoritmo-repeticion-espaciada/">
+<link rel="alternate" hreflang="it" href="https://vocalibur.app/it/blog/fsrs-algoritmo-ripetizione-spaziata/">
+<link rel="alternate" hreflang="de" href="https://vocalibur.app/de/blog/fsrs-algorithmus/">
+<link rel="alternate" hreflang="x-default" href="https://vocalibur.app/en/blog/fsrs-spaced-repetition-algorithm/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#fbf7ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14110c" media="(prefers-color-scheme: dark)">
+<meta name="apple-itunes-app" content="app-id=6811388702">
+<link rel="icon" href="../../../assets/icons/icon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="../../../assets/icons/icon-180.png">
+<link rel="preload" href="../../../assets/fonts/Newsreader.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../../../assets/fonts/HankenGrotesk.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../../assets/sentari.css?v=c8da9f516b">
+<meta property="og:site_name" content="Vocalibur">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FSRS: come si calcola il prossimo ripasso | Vocalibur">
+<meta property="og:description" content="Stabilità, difficoltà, probabilità di richiamo: capire FSRS e i suoi limiti, senza confondere precisione delle previsioni e tempo risparmiato dimostrato.">
+<meta property="og:url" content="https://vocalibur.app/it/blog/fsrs-algoritmo-ripetizione-spaziata/">
+<meta property="og:locale" content="it_IT">
+<meta property="og:image" content="https://vocalibur.app/assets/og/it.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"FSRS: come si calcola il prossimo ripasso","description":"Stabilità, difficoltà, probabilità di richiamo: capire FSRS e i suoi limiti, senza confondere precisione delle previsioni e tempo risparmiato dimostrato.","inLanguage":"it","url":"https://vocalibur.app/it/blog/fsrs-algoritmo-ripetizione-spaziata/","mainEntityOfPage":"https://vocalibur.app/it/blog/fsrs-algoritmo-ripetizione-spaziata/","articleSection":"Metodo","keywords":"FSRS, algoritmo FSRS, algoritmo ripetizione spaziata, FSRS vs SM-2, Anki FSRS, stabilità difficoltà recuperabilità, ritenzione desiderata, srs-benchmark, modello di memoria DSR","image":"https://vocalibur.app/assets/og/it.png","author":{"@type":"Organization","name":"Vocalibur","url":"https://vocalibur.app/it/"},"publisher":{"@type":"Organization","name":"Pengram","url":"https://pengram.app/","logo":{"@type":"ImageObject","url":"https://vocalibur.app/assets/icons/icon-512.png"}},"datePublished":"2026-10-26","dateModified":"2026-10-26"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://vocalibur.app/it/"},{"@type":"ListItem","position":2,"name":"Articoli","item":"https://vocalibur.app/it/blog/"},{"@type":"ListItem","position":3,"name":"FSRS: come si calcola il prossimo ripasso","item":"https://vocalibur.app/it/blog/fsrs-algoritmo-ripetizione-spaziata/"}]}</script>
+</head>
+<body class="page-article">
+<a class="skip-link" href="#main">Vai al contenuto</a>
+<header class="site-header">
+<div class="site-header__inner">
+<a class="brand" href="../../../it/" aria-label="Vocalibur"><img src="../../../assets/icons/icon-64.png" alt="" width="30" height="30"><b>Vocalibur</b></a>
+<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav">Menu</button>
+<nav class="site-nav" id="siteNav" aria-label="Navigazione principale">
+<div class="site-nav__links"><a href="../../../it/#method">Come funziona</a><a href="../../../it/#premium">Gratis e Premium</a><a href="../../../it/blog/" aria-current="page">Articoli</a><a href="../../../it/support/">Aiuto</a></div>
+<details class="locale-menu"><summary aria-label="Scegli la lingua"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false"><path fill="#009246" d="M0 0h10v20H0z"/><path fill="#fff" d="M10 0h10v20H10z"/><path fill="#ce2b37" d="M20 0h10v20H20z"/></svg>IT</summary><div><a href="../../../fr/blog/fsrs-algorithme-repetition-espacee/" lang="fr" hreflang="fr" data-lang="fr"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false"><path fill="#002654" d="M0 0h10v20H0z"/><path fill="#fff" d="M10 0h10v20H10z"/><path fill="#ce1126" d="M20 0h10v20H20z"/></svg>Français</a><a href="../../../en/blog/fsrs-spaced-repetition-algorithm/" lang="en" hreflang="en" data-lang="en"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false"><path fill="#012169" d="M0 0h30v20H0z"/><path stroke="#fff" stroke-width="4" d="M0 0l30 20M30 0L0 20"/><path stroke="#c8102e" stroke-width="1.6" d="M0 0l30 20M30 0L0 20"/><path stroke="#fff" stroke-width="6.6" d="M15 0v20M0 10h30"/><path stroke="#c8102e" stroke-width="4" d="M15 0v20M0 10h30"/></svg>English</a><a href="../../../es/blog/fsrs-algoritmo-repeticion-espaciada/" lang="es" hreflang="es" data-lang="es"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false"><path fill="#aa151b" d="M0 0h30v20H0z"/><path fill="#f1bf00" d="M0 5h30v10H0z"/></svg>Español</a><a href="../../../it/blog/fsrs-algoritmo-ripetizione-spaziata/" lang="it" hreflang="it" aria-current="true" data-lang="it"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false"><path fill="#009246" d="M0 0h10v20H0z"/><path fill="#fff" d="M10 0h10v20H10z"/><path fill="#ce2b37" d="M20 0h10v20H20z"/></svg>Italiano</a><a href="../../../de/blog/fsrs-algorithmus/" lang="de" hreflang="de" data-lang="de"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true" focusable="false"><path fill="#000" d="M0 0h30v6.7H0z"/><path fill="#dd0000" d="M0 6.7h30v6.6H0z"/><path fill="#ffce00" d="M0 13.3h30V20H0z"/></svg>Deutsch</a></div></details>
+<a class="store-chip" href="https://apps.apple.com/app/id6811388702">Scarica</a>
+</nav>
+</div>
+</header>
+<main class="article" id="main">
+<nav class="breadcrumb" aria-label="Percorso di navigazione"><a href="../../../it/">Home</a><span aria-hidden="true">/</span><a href="../../../it/blog/">Articoli</a><span aria-hidden="true">/</span><span>Metodo</span></nav>
+<header class="article-head"><span class="cat"><svg class="cat-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8 14.5l2.5 2.5 5-5"/></svg>Metodo</span><h1>FSRS: come si calcola il prossimo ripasso</h1>
+<p class="article-meta"><span>4 min di lettura</span><span>Rivisto il 26 ottobre 2026</span><a href="../../../it/blog/metodo-editoriale/">Metodo e correzioni</a></p><p class="article-translated">Tradotto e adattato dal francese dalla redazione di Vocalibur. Le fonti sono citate nella lingua originale.</p></header>
+<div class="tldr"><h2>L’essenziale</h2><ul><li>FSRS stima una probabilità a partire da uno storico; non legge la memoria.</li><li>Bisogna distinguere l’algoritmo dal modo in cui un’app lo integra.</li><li>Un punteggio di previsione migliore non dimostra da solo una percentuale di tempo risparmiato.</li></ul></div>
+<div class="prose"><p>Perché una carta torna domani e un’altra tra diverse settimane? Un pianificatore di ripetizione spaziata trasforma uno storico di risposte in scadenze future. FSRS è una famiglia di modelli aperti usata per questo calcolo. Stima probabilità; non misura direttamente ciò che il tuo cervello ha immagazzinato.</p>
+
+<h2>Da SM-2 a un modello di previsione</h2>
+<p>La <a href="https://www.super-memory.com/english/ol/sm2.htm">descrizione originale di SM-2 di Piotr Woźniak</a> colloca le prime versioni del programma nel 1987. L’algoritmo modifica gli intervalli e un fattore di facilità in base alla qualità delle risposte. Sarebbe quindi inesatto descriverlo come un calendario identico per tutte le carte.</p>
+<p>FSRS rappresenta in un altro modo lo stato di una carta e permette di adattare i parametri del modello agli storici di ripasso. Bisogna distinguere l’algoritmo pubblicato, la sua versione e il modo in cui un’app lo integra. Una funzione di ottimizzazione disponibile in Anki non è automaticamente disponibile in ogni software che usa FSRS.</p>
+
+<h2>Tre nozioni per leggere le stime</h2>
+<p>La <a href="https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-Algorithm">documentazione di FSRS-6</a> definisce la difficoltà, la stabilità e la recuperabilità. La <strong>difficoltà</strong> evolve in base alle risposte: non è un livello QCER oggettivo della parola. La <strong>stabilità</strong> corrisponde all’intervallo a cui il modello prevede il 90% di richiamo. La <strong>recuperabilità</strong> è la probabilità di richiamo stimata in un dato momento.</p>
+<p>Così, una stabilità di trenta giorni non significa che la parola resterà intatta per trenta giorni prima di cominciare a svanire. Significa soltanto che, trenta giorni dopo il ripasso, il modello prevede il 90% di probabilità di richiamo. FSRS-6 usa 21 parametri; il loro valore e il modo in cui vengono adattati dipendono dall’integrazione. Queste variabili statistiche non vanno identificate alla lettera con quantità biologiche.</p>
+
+<h2>La ritenzione desiderata è un compromesso</h2>
+<p>Il <a href="https://docs.ankiweb.net/manual/deck-options#desired-retention">manuale di Anki</a> spiega che una ritenzione desiderata più alta comporta in genere intervalli più brevi e più ripassi. Avvicinarsi al 100% può costare molto lavoro per un guadagno limitato. L’obiettivo guida una previsione: non garantisce il risultato di ciascuna delle tue risposte.</p>
+<p>Un’app deve anche decidere le sue fasi di riapprendimento, i suoi limiti giornalieri e il modo di convertire i tuoi scorrimenti in valutazioni. Queste scelte cambiano l’esperienza. Dire soltanto «usa FSRS» non basta a descrivere tutto il comportamento del prodotto.</p>
+
+<h2>Che cosa dimostra un banco di prova, e che cosa no</h2>
+<p>Il <a href="https://github.com/open-spaced-repetition/srs-benchmark">banco di prova srs-benchmark</a> confronta le previsioni di diversi modelli su storici di ripasso. Separa i dati di addestramento da quelli di valutazione e usa in particolare la perdita logaritmica (log loss), che penalizza le probabilità poco adatte alle risposte osservate. Il protocollo e la classifica cambiano nel tempo; un numero va sempre collegato alla loro versione.</p>
+<p>Prevedere meglio il richiamo è un risultato interessante. FSRS punta a ridurre i ripassi dal 20 al 30% rispetto all’algoritmo classico SM-2, a parità di ritenzione; è l’obiettivo del modello, non un guadagno misurato in Vocalibur né garantito a ciascuno. Per dimostrare questo guadagno, bisogna definire una politica di pianificazione e confrontare il carico con una ritenzione misurata davvero, per esempio in un esperimento prospettico adeguato.</p>
+<p>Non promettiamo quindi né un tempo risparmiato preciso per ognuno, né il «miglior algoritmo disponibile». Gli storici possono essere selezionati, le valutazioni variare da una persona all’altra e le risposte osservate coprire solo una parte della conoscenza di una parola.</p>
+
+<h2>Perché conta la qualità della tua risposta</h2>
+<p>Immagina di non aver ritrovato la parola, ma di segnare poi un successo perché la soluzione ti sembra ovvia. Il pianificatore riceve un’informazione diversa dalla tua esperienza reale. Al contrario, trattare ogni esitazione come una dimenticanza completa può sottovalutare ciò che avevi recuperato.</p>
+<p>La buona pratica è rispondere secondo le istruzioni dell’app, distinguendo ciò che sapevi prima di rivelare la carta da ciò che è diventato chiaro dopo. In Vocalibur, «Rivela» serve a verificare e non ha alcun effetto sull’algoritmo: conta solo la tua risposta, «La conosco» a destra o «Da ripassare» a sinistra. «Padroneggiato» (verso l’alto), l’archiviazione (verso il basso) e «Già nota» (il primissimo scorrimento a destra su una parola mai vista, opzione attiva per impostazione predefinita) fanno uscire la parola dai ripassi programmati: sono scelte dichiarate, non normali risposte di apprendimento.</p>
+
+<h2>Che cosa puoi ragionevolmente aspettarti da Vocalibur</h2>
+<p>Vocalibur usa FSRS-6 per adattare le scadenze alle risposte registrate. Questo adattamento non significa che i parametri generali vengano riaddestrati di continuo sul tuo storico, né che l’app osservi le tue letture esterne.</p>
+<p>In questa versione di Vocalibur, il calendario usa i parametri standard di FSRS-6: le impostazioni generali del modello. Lo stato e lo storico di ogni carta evolvono comunque con le tue risposte. Con Premium, un modello di memoria personale, adattato ai tuoi ripassi, si consulta nelle impostazioni; non serve a calcolare le scadenze.</p>
+<p>Se il carico aumenta, guarda anche il numero di novità e i ritorni accumulati. Se una carta resta difficile, cerca una confusione di significato o una spiegazione che manca. Un algoritmo può scegliere una scadenza; non rende automaticamente comprensibile un esempio.</p>
+<p>FSRS è quindi uno strumento di organizzazione. Si fa carico di un calcolo ripetitivo per lasciarti lavorare sulle parole, ma verificare il significato, fare pratica in situazioni reali e scegliere un ritmo compatibile con i tuoi impegni restano compiti tuoi.</p>
+</div>
+<section class="sources"><h2>Fonti</h2><ol><li><a href="https://www.super-memory.com/english/ol/sm2.htm" rel="noopener">SuperMemo. Descrizione originale dell’algoritmo SM-2, nato dal programma del 1987.</a></li><li><a href="https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-Algorithm" rel="noopener">Open Spaced Repetition. Documentazione dell’algoritmo FSRS, compreso FSRS-6. Consultata il 5 settembre 2026.</a></li><li><a href="https://docs.ankiweb.net/deck-options.html#desired-retention" rel="noopener">Anki Manual. Desired retention e opzioni di pianificazione. Consultato il 5 settembre 2026.</a></li><li><a href="https://github.com/open-spaced-repetition/srs-benchmark" rel="noopener">Open Spaced Repetition. srs-benchmark, banco di prova degli algoritmi di ripetizione spaziata (9.999 raccolte Anki, 349.923.850 ripassi valutati esclusi i ripassi dello stesso giorno; perdita logaritmica: FSRS-6 0,3460, FSRS-5 0,3561). Consultato il 26 ottobre 2026.</a></li></ol></section>
+<section class="faq-block"><h2>Domande frequenti</h2><div class="faq"><details><summary>FSRS sa quando dimenticherò?</summary><div class="answer">No. Produce una stima statistica. Una scadenza non indica un momento biologico esatto.</div></details><details><summary>Vocalibur riaddestra di continuo il modello sulle mie risposte?</summary><div class="answer">No. Vocalibur pianifica con i parametri standard di FSRS-6, gli stessi per tutti. Le tue risposte cambiano lo stato di ogni carta, quindi le sue scadenze. Con Premium, un modello di memoria personale, adattato ai tuoi ripassi, si consulta nelle impostazioni; non calcola alcuna scadenza.</div></details></div></section>
+<aside class="article-cta"><div><b>In Vocalibur</b><p>Ogni carta riunisce una parola, una frase che ne mostra l’uso e un calendario di ripassi distanziati. Le parole arrivano dalla più frequente alla più rara.</p></div><a class="button button--primary" href="https://apps.apple.com/app/id6811388702">Scarica su App Store</a><a class="text-link" href="../../../it/#frequency">Scopri l’app</a></aside>
+</main>
+<section class="related" aria-labelledby="relatedTitle"><h2 id="relatedTitle">Da leggere poi</h2><div class="articles"><a class="art-card" href="../../../it/blog/quante-parole-al-giorno/"><span class="cat"><svg class="cat-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8 14.5l2.5 2.5 5-5"/></svg>Metodo</span><h3>Quante parole nuove imparare al giorno?</h3><p>Scegliere un carico di vocaboli sostenibile tenendo conto di ripassi, difficoltà e tempo disponibile, senza inventare una quota scientifica.</p><span class="art-card__meta">3 min</span></a><a class="art-card" href="../../../it/blog/come-imparare-i-vocaboli-inglesi/"><span class="cat"><svg class="cat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h5.5a2 2 0 0 1 2 2V20a1.8 1.8 0 0 0-1.8-1.8H5z"/><path d="M19 4.5h-5.5a2 2 0 0 0-2 2V20a1.8 1.8 0 0 1 1.8-1.8H19z"/></svg>Vocabolario</span><h3>Come imparare i vocaboli inglesi: il metodo in 5 passi</h3><p>Come imparare i vocaboli inglesi in modo efficace: prima le parole frequenti, in contesto, con richiamo attivo e ripassi distanziati. Con studi alla mano.</p><span class="art-card__meta">5 min</span></a><a class="art-card" href="../../../it/blog/curva-dell-oblio-ebbinghaus/"><span class="cat"><svg class="cat-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5c-4.7 0-8.5-3.6-8.5-8s3.8-8 8.5-8c3.6 0 6.5 2.7 6.5 6 0 2.7-2.2 4.8-5 4.8-2.2 0-4-1.6-4-3.6 0-1.6 1.3-2.8 3-2.8"/></svg>Memoria</span><h3>La curva dell’oblio di Ebbinghaus</h3><p>La curva dell’oblio spiegata: che cosa misurava Ebbinghaus nel riapprendimento e perché le sue famose percentuali non valgono per il tuo vocabolario.</p><span class="art-card__meta">3 min</span></a></div></section>
+<footer class="site-footer">
+<div class="site-footer__inner">
+<div class="site-footer__brand"><a class="brand" href="../../../it/"><img src="../../../assets/icons/icon-64.png" alt="" width="30" height="30"><b>Vocalibur</b></a><p>I vocaboli inglesi, dalle parole più utili alle più rare.</p></div>
+<div class="site-footer__links"><div><h2>Vocalibur</h2><ul><li><a href="../../../it/#method">Come funziona</a></li><li><a href="../../../it/#premium">Gratis e Premium</a></li><li><a href="../../../it/#quiz">Il quiz</a></li><li><a href="../../../it/1000-parole-inglesi-piu-usate/">Le 1.000 parole più usate</a></li><li><a href="../../../it/blog/">Articoli</a></li><li><a href="https://apps.apple.com/app/id6811388702">Scarica su App Store</a></li></ul></div><div><h2>Aiuto e documenti</h2><ul><li><a href="../../../it/support/">Aiuto e contatti</a></li><li><a href="../../../it/privacy/">Informativa sulla privacy</a></li><li><a href="../../../it/terms/">Termini di utilizzo</a></li><li><a href="../../../licenses/">Fonti e licenze</a></li><li><a href="https://pengram.app/mentions-legales.html">Note legali (in francese)</a></li></ul></div></div>
+</div>
+<p class="site-footer__bottom"><span>© 2026 Pengram</span><a href="mailto:contact@pengram.app">contact@pengram.app</a></p>
+</footer>
+<script src="../../../assets/app.js?v=8807ff3b01" defer></script>
+</body>
+</html>

@@ -6,6 +6,7 @@
   var root = document.documentElement;
   var still = window.matchMedia("(prefers-reduced-motion: reduce)");
   var lang = root.lang || "en";
+  var here = document.currentScript && document.currentScript.src;
 
   // Objects move in once, as they come into view.
   var movers = document.querySelectorAll("[data-arrive]");
@@ -19,6 +20,29 @@
       });
     }, { rootMargin: "0px 0px -12% 0px" });
     movers.forEach(function (el) { seen.observe(el); });
+  }
+
+  // The hero's card: its two faces load once the page is shown, then it starts folding and
+  // unfolding, and only while it is on screen.
+  var fold = document.querySelector(".fold");
+  if (fold && !still.matches) {
+    var start = function () {
+      var images = Array.from(fold.querySelectorAll("img[data-src]"));
+      var waiting = images.length;
+      fold.querySelectorAll("source[data-srcset]").forEach(function (source) { source.srcset = source.getAttribute("data-srcset"); });
+      images.forEach(function (img) {
+        img.addEventListener("load", function () { if (--waiting === 0) fold.classList.add("is-ready"); }, { once: true });
+        img.src = img.getAttribute("data-src");
+      });
+    };
+    if (document.readyState === "complete") start(); else window.addEventListener("load", start, { once: true });
+  }
+  // The hero's card folds and unfolds only while it is on screen.
+  var hero = document.querySelector(".hero__product");
+  if (hero && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      hero.classList.toggle("is-offscreen", !entries[0].isIntersecting);
+    }).observe(hero);
   }
 
   // MARK: The card to swipe
@@ -127,6 +151,124 @@
     deck.addEventListener("pointercancel", release);
     order();
   });
+
+  // MARK: How much of a text the most frequent words cover, read with the finger
+  document.querySelectorAll("[data-coverage]").forEach(function (chart) {
+    var data = JSON.parse(chart.getAttribute("data-coverage"));
+    var svg = chart.querySelector("svg");
+    var cursor = chart.querySelector("[data-cursor]");
+    var dot = chart.querySelector("[data-dot]");
+    var outWords = chart.querySelector("[data-out-words]");
+    var outShare = chart.querySelector("[data-out-share]");
+    var box = data.box, last = data.samples.length - 1;
+    var percent = new Intl.NumberFormat(lang, { style: "percent", maximumFractionDigits: 0 });
+    var count = new Intl.NumberFormat(lang, { useGrouping: data.group ? "always" : "min2" });
+    var index = Math.round(data.start / data.step);
+    function x(i) { return box[0] + (box[2] - box[0]) * i / last; }
+    function y(value) { return box[3] - (box[3] - box[1]) * value / 100; }
+    function set(i) {
+      index = Math.max(0, Math.min(last, Math.round(i)));
+      var value = data.samples[index];
+      cursor.setAttribute("x1", x(index)); cursor.setAttribute("x2", x(index));
+      dot.setAttribute("cx", x(index)); dot.setAttribute("cy", y(value));
+      outWords.textContent = data.words.replace("{n}", count.format(index * data.step));
+      outShare.textContent = data.share.replace("{p}", percent.format(value / 100));
+      svg.setAttribute("aria-valuenow", index * data.step);
+      svg.setAttribute("aria-valuetext", outWords.textContent + ", " + outShare.textContent);
+    }
+    function fromPointer(event) {
+      var rect = svg.getBoundingClientRect();
+      var vx = (event.clientX - rect.left) / rect.width * data.width;
+      set((vx - box[0]) / (box[2] - box[0]) * last);
+    }
+    var dragging = false;
+    svg.addEventListener("pointerdown", function (event) { dragging = true; svg.setPointerCapture(event.pointerId); fromPointer(event); });
+    svg.addEventListener("pointermove", function (event) { if (dragging || event.pointerType === "mouse") fromPointer(event); });
+    svg.addEventListener("pointerup", function () { dragging = false; });
+    svg.addEventListener("pointercancel", function () { dragging = false; });
+    svg.addEventListener("keydown", function (event) {
+      var step = event.shiftKey ? 10 : 1;
+      var next = { ArrowRight: index + step, ArrowUp: index + step, ArrowLeft: index - step, ArrowDown: index - step, Home: 0, End: last }[event.key];
+      if (next === undefined) return;
+      event.preventDefault();
+      set(next);
+    });
+    chart.classList.add("is-live");
+    set(index);
+  });
+
+  // MARK: App Store prices of the visitor's country
+  // The page shows its own language's country (France for French…); prices.json, read from App
+  // Store Connect, gives every storefront. The country comes from the time zone, else from the
+  // browser's region; the visitor can pick another one.
+  var plans = document.querySelector("[data-prices]");
+  if (plans && here && window.fetch && "IntersectionObserver" in window) {
+    var asked = false;
+    var watch = new IntersectionObserver(function (entries) {
+      if (asked || !entries[0].isIntersecting) return;
+      asked = true;
+      watch.disconnect();
+      fetch(new URL("prices.json", here)).then(function (r) { return r.json(); }).then(prices).catch(function () {});
+    }, { rootMargin: "700px 0px" });
+    watch.observe(plans);
+  }
+  function prices(data) {
+    var all = data.prices;
+    var country = plans.getAttribute("data-country");
+    var guess = null;
+    try { guess = data.zones[Intl.DateTimeFormat().resolvedOptions().timeZone]; } catch (e) { guess = null; }
+    if (!all[guess]) {
+      guess = null;
+      (navigator.languages || [navigator.language || ""]).forEach(function (tag) {
+        var m = /-([a-z]{2})(?:-|$)/i.exec(String(tag));
+        if (!guess && m && all[m[1].toUpperCase()]) guess = m[1].toUpperCase();
+      });
+    }
+    var names = null;
+    try { names = new Intl.DisplayNames([lang], { type: "region" }); } catch (e) { names = null; }
+    function name(code) { try { return names ? names.of(code) : code; } catch (e) { return code; } }
+    function money(code, amount) {
+      var currency = all[code][0];
+      var digits = /\.00$/.test(amount) ? 0 : 2;
+      var options = { style: "currency", currency: currency, minimumFractionDigits: digits, maximumFractionDigits: digits };
+      try { return new Intl.NumberFormat(lang + "-" + code, options).format(+amount); }
+      catch (e) { return new Intl.NumberFormat(lang, options).format(+amount); }
+    }
+    function fill(slot, text) { var el = plans.querySelector('[data-price="' + slot + '"]'); if (el) el.textContent = text; }
+    function show(code) {
+      var p = all[code];
+      if (!p) return;
+      fill("free", money(code, "0.00"));
+      fill("annual", money(code, p[2]));
+      var monthly = (Math.floor(+p[2] / 12 * 100) / 100).toFixed(2);
+      var equivalent = plans.querySelector('[data-price="equivalent"]');
+      equivalent.textContent = equivalent.getAttribute("data-template").replace("{price}", money(code, monthly));
+      var alternative = plans.querySelector('[data-price="alternative"]');
+      alternative.textContent = alternative.getAttribute("data-template").replace("{month}", money(code, p[1])).replace("{life}", money(code, p[3]));
+      plans.querySelector('[data-price="trial"]').hidden = !p[4];
+    }
+    // The country line becomes a menu of every storefront, named in the page's language.
+    var line = plans.querySelector("[data-country-line]");
+    var select = document.createElement("select");
+    select.setAttribute("aria-label", line.getAttribute("data-label"));
+    Object.keys(all).map(function (code) { return [name(code), code]; })
+      .sort(function (a, b) { return a[0].localeCompare(b[0], lang); })
+      .forEach(function (pair) {
+        var option = document.createElement("option");
+        option.value = pair[1];
+        option.textContent = pair[0];
+        select.appendChild(option);
+      });
+    var chosen = all[guess] ? guess : country;
+    select.value = chosen;
+    select.addEventListener("change", function () { show(select.value); });
+    var label = document.createElement("span");
+    label.textContent = line.getAttribute("data-template").split("{country}")[0].replace(/[\s  ]*:[\s  ]*$/, "");
+    line.textContent = "";
+    line.appendChild(label);
+    line.appendChild(select);
+    if (chosen !== country) show(chosen);
+  }
 
   // MARK: The schedule, read with the finger
   document.querySelectorAll("[data-recall]").forEach(function (chart) {
