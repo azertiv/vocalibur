@@ -22,27 +22,32 @@
     movers.forEach(function (el) { seen.observe(el); });
   }
 
-  // The hero's card: its two faces load once the page is shown, then it starts folding and
-  // unfolding, and only while it is on screen.
-  var fold = document.querySelector(".fold");
-  if (fold && !still.matches) {
+  // MARK: The hero, the app filmed (D-221)
+  // The poster is the recording's first frame. Once the page is shown, the video of the
+  // visitor's theme loads and plays in a loop, only while on screen; none of it with reduced
+  // motion or a request to save data.
+  var video = document.querySelector(".hero-video");
+  var saveData = navigator.connection && navigator.connection.saveData;
+  if (video && !still.matches && !saveData && "IntersectionObserver" in window) {
+    var dark = window.matchMedia("(prefers-color-scheme: dark)");
+    var visible = false;
+    var source = function () { return video.getAttribute(dark.matches ? "data-dark" : "data-light"); };
+    var play = function () { if (visible && video.src) { var p = video.play(); if (p && p.catch) p.catch(function () {}); } };
+    video.addEventListener("playing", function () { video.classList.add("is-playing"); });
     var start = function () {
-      var images = Array.from(fold.querySelectorAll("img[data-src]"));
-      var waiting = images.length;
-      fold.querySelectorAll("source[data-srcset]").forEach(function (source) { source.srcset = source.getAttribute("data-srcset"); });
-      images.forEach(function (img) {
-        img.addEventListener("load", function () { if (--waiting === 0) fold.classList.add("is-ready"); }, { once: true });
-        img.src = img.getAttribute("data-src");
-      });
+      video.src = source();
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        if (visible) play(); else video.pause();
+      }).observe(video);
     };
+    dark.addEventListener("change", function () {
+      if (!video.src) return;
+      video.classList.remove("is-playing");
+      video.src = source();
+      play();
+    });
     if (document.readyState === "complete") start(); else window.addEventListener("load", start, { once: true });
-  }
-  // The hero's card folds and unfolds only while it is on screen.
-  var hero = document.querySelector(".hero__product");
-  if (hero && "IntersectionObserver" in window) {
-    new IntersectionObserver(function (entries) {
-      hero.classList.toggle("is-offscreen", !entries[0].isIntersecting);
-    }).observe(hero);
   }
 
   // MARK: The card to swipe
